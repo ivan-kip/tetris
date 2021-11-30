@@ -1,0 +1,203 @@
+<style>
+	td{
+		width: 10px;
+		height: 10px;
+	}
+	.block{
+		background: black;
+	}
+</style>
+
+<div id=info>
+	<p>Линий:<span id="lines">0</span></p>
+	<table id="next"><tbody></tbody></table>
+</div>
+
+<table id="table" style="border: 1px solid black">
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<script>
+var table = document.getElementById("table");
+var speed = 400;
+var current_obj = null;
+var current_coord = null;
+
+var lines = document.getElementById("lines");
+var next = document.getElementById("next");
+var next_obj = obj_generation();
+
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //Максимум и минимум включаются
+}
+
+function obj_generation(){ // ????
+	switch(getRandomIntInclusive(0, 6)) {
+	  case 0: 
+		return [[1], [1], [1], [1]];
+		break;
+	  case 1: 
+		return [[1, 1, 1], [0, 1, 0]];
+		break;
+	  case 2: 
+		return [[1, 0], [1, 0], [1, 1]];
+		break;
+	  case 3: 
+		return [[0, 1], [0, 1], [1, 1]];
+		break;
+	  case 4: 
+		return [[1, 1, 0], [0, 1, 1]];
+		break;
+	  case 5: 
+		return [[0, 1, 1], [1, 1, 0]];
+		break;
+	  case 6: 
+		return [[1, 1], [1, 1]];
+		break;
+	}
+}
+
+function next_render(obj){
+	var tody = document.createElement("tbody");
+	for(i = 0; i < obj.length; i++){
+		var tr = document.createElement("tr");
+		for(j = 0; j < obj[i].length; j++) {
+			var td = document.createElement("td");
+			if(obj[i][j]) td.classList.add("block");
+			tr.appendChild(td);
+		}
+		tody.appendChild(tr);
+	}
+	next.replaceChild(tody, next.firstChild);
+}
+
+function cross(obj, r, c){
+	for(i = 0; i < obj.length; i++)
+		for(j = 0; j < obj[i].length; j++){
+			if(
+				obj[i][j] 
+				&& (current_coord[0] + i + r) >= 0 
+				&& table.rows.length > current_coord[0] + i + r
+				&& table.rows[current_coord[0] + i + r].cells[current_coord[1] + j + c].classList.contains("block")
+				&& !table.rows[current_coord[0] + i + r].cells[current_coord[1] + j + c].classList.contains("obj")
+			) return true;
+		}
+	return false;
+}
+
+function obj_down(){
+	
+	if(!current_obj) {
+		/*
+		current_obj = obj_generation();
+		current_coord = [- current_obj.length, 4];
+		document.querySelectorAll(".obj").forEach(function(td){td.classList.remove("obj")});
+		*/
+		current_obj = next_obj.slice(0);
+		next_obj = obj_generation();
+		next_render(next_obj);
+		current_coord = [- current_obj.length, 4];
+		document.querySelectorAll(".obj").forEach(function(td){td.classList.remove("obj")});
+	}
+	
+	if(current_obj.length + current_coord[0] < table.rows.length && !cross(current_obj, 1 , 0)){
+		for(i = current_obj.length - 1; i >= 0; i--)
+			for(j = 0; j < current_obj[i].length; j++){
+				if(current_obj[i][j] && current_coord[0] + i >= 0) table.rows[current_coord[0] + i].cells[current_coord[1] + j].classList.remove("block", "obj");//field[current_coord[0] + i][current_coord[1] + j].classList.remove("block", "obj");
+				if(current_obj[i][j] && current_coord[0] + i + 1 >= 0) table.rows[current_coord[0] + i + 1].cells[current_coord[1] + j].classList.add("block", "obj");//field[current_coord[0] + i + 1][current_coord[1] + j].classList.add("block", "obj");
+			}
+		
+		current_coord[0]++;
+	}
+	else {
+		check();
+		current_obj = null;
+	}
+}
+
+function check(){
+	for(i = 0; i < current_obj.length; i++)
+		if(table.rows[current_coord[0] + i].querySelectorAll(".block").length == table.rows[current_coord[0] + i].cells.length){
+			//for(j = 0; j < table.rows[current_coord[0] + i].cells.length; j++) table.rows[current_coord[0] + i].cells[j].classList.remove("block", "obj");
+			table.deleteRow(current_coord[0] + i);
+			var tr = document.createElement("tr");
+			for(j = 0; j < table.rows[0].cells.length; j++) tr.appendChild(document.createElement("td"));
+			table.insertBefore(tr, table.firstChild);
+			
+			speed -= 5;
+			clearInterval(process);
+			process = setInterval(obj_down, speed);
+			
+			lines.textContent = 1 + parseInt(lines.textContent);
+		}
+}
+
+function leftright(delta){
+	if(!cross(current_obj, 0 , delta)){
+		for(i = current_obj.length - 1; i >= 0; i--)
+			for(j = 0; j < current_obj[i].length; j++){
+				var cell = delta < 0? j: current_obj[i].length - j - 1; //table.rows[current_coord[0] + i].cells.length - j;
+				if(current_coord[0] + i >= 0 && current_obj[i][cell]){
+					table.rows[current_coord[0] + i].cells[current_coord[1] + cell].classList.remove("block", "obj");
+					table.rows[current_coord[0] + i].cells[current_coord[1] + cell + delta].classList.add("block", "obj");
+				}
+			}
+		current_coord[1] += delta;
+	}
+}
+
+function rotate(obj){
+	var rot = [];
+	for(i = 0; i < current_obj.length; i++)
+		for(j = 0; j < current_obj[i].length; j++){
+			if(!rot[j]) rot[j] = [];
+			rot[j][current_obj.length - i - 1] = current_obj[i][j];
+		}
+	return rot;	
+}
+
+function render(){
+	for(i = 0; i < current_obj.length; i++)
+		for(j = 0; j < current_obj[i].length; j++)
+			if(current_obj[i][j]) table.rows[current_coord[0] + i].cells[current_coord[1] + j].classList.add("block", "obj");
+}
+
+function obj_rotate(){
+	var tr = rotate(current_obj.slice(0));
+	if(!cross(tr, 0, 0)) {
+		document.querySelectorAll(".obj").forEach(function(td){td.classList.remove("obj", "block")});
+		current_obj = tr;
+		render();
+	}
+}
+
+document.body.addEventListener('keydown', function(){
+	if (event.keyCode == 37) leftright(-1);
+	if (event.keyCode == 38) obj_rotate();
+	if (event.keyCode == 39) leftright(1);
+	if (event.keyCode == 40) obj_down();
+});
+
+var process = setInterval(obj_down, speed);
+</script>
